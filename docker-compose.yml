@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  app:
+    container_name: "sgpymes-1.0-snapshot"
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sgpymes-postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://sgpymes-postgres:5432/sgpymes
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  sgpymes-postgres:
+    image: postgres
+    container_name: "sgpymes-postgres"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=sgpymes
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
